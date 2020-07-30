@@ -25,6 +25,10 @@ class SalesforceServiceProvider extends ServiceProvider
 
     public function boot()
     {
+        $this->publishes([
+            __DIR__ . '/../config/salesforce.php' => config_path('salesforce.php'),
+        ]);
+
         /** @var Router $router */
         $router = $this->app['router'];
 
