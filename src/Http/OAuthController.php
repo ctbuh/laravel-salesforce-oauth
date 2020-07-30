@@ -62,4 +62,10 @@ class OAuthController
 
         return 'Something went wrong...';
     }
+    
+    public function logout(Manager $manager)
+    {
+        $manager->revokeQuietly();
+        return redirect()->back();
+    }
 }

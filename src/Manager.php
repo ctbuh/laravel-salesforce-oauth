@@ -76,7 +76,11 @@ class Manager
         $token = $this->tokenStorage->getAccessToken();
 
         try {
-            $this->api->revoke($token->access_token);
+
+            if ($token) {
+                $this->api->revoke($token);
+            }
+
             $this->tokenStorage->forget();
             return true;
         } catch (RequestException $exception) {
