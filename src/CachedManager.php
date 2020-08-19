@@ -25,7 +25,7 @@ class CachedManager
         $this->cache = $cache;
     }
 
-    protected function getCacheKey()
+    private function getCacheKey()
     {
         $token = $this->manager->getAccessToken();
 
@@ -34,6 +34,14 @@ class CachedManager
         }
 
         return null;
+    }
+
+    /**
+     * @return AccessToken
+     */
+    public function getAccessToken()
+    {
+        return $this->manager->getAccessToken();
     }
 
     public function flush()
