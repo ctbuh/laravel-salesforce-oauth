@@ -61,19 +61,32 @@ class CachedManager
         // assume stored token is valid
         if ($manager->getAccessToken()) {
 
-            return $this->cache->remember($this->getCacheKey(), self::CACHE_TIMEOUT, function () use ($manager) {
+            if ($this->cache->has($this->getCacheKey())) {
+                return $this->cache->get($this->getCacheKey());
+            } else {
 
+                // what if the token stored is no longer valid and in need of refreshing?
                 $info = null;
 
                 try {
                     $info = $manager->getUserInfo();
                 } catch (BadTokenException $exception) {
                     $manager->refreshQuietly();
-                    $info = $manager->getUserInfo();
-                }
 
-                return $info;
-            });
+                    try {
+                        $info = $manager->getUserInfo();
+                    } catch (BadTokenException $exception) {
+                        // do nothing
+                    }
+                }
+                
+                // cache only if something was returned...
+                if ($info) {
+                    $this->cache->put($this->getCacheKey(), $info, self::CACHE_TIMEOUT);
+                } else {
+                    // $manager->revokeQuietly();
+                }
+            }
         }
 
         return null;

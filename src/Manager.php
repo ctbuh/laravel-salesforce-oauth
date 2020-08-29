@@ -8,7 +8,7 @@ use GuzzleHttp\Exception\RequestException;
 class Manager
 {
     /**
-     * @var TokenSessionStorage
+     * @var TokenStorage
      */
     private $tokenStorage;
     /**
@@ -16,7 +16,7 @@ class Manager
      */
     private $api;
 
-    public function __construct(TokenSessionStorage $tokenStorage, AuthApi $api)
+    public function __construct(TokenStorage $tokenStorage, AuthApi $api)
     {
         $this->tokenStorage = $tokenStorage;
         $this->api = $api;
@@ -56,6 +56,10 @@ class Manager
     public function refreshQuietly()
     {
         $refresh_token = $this->tokenStorage->getRefreshToken();
+
+        if (!$refresh_token) {
+            return false;
+        }
 
         try {
             $token = $this->api->getNewAccessToken($refresh_token);

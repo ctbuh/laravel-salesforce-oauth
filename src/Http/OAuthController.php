@@ -2,10 +2,10 @@
 
 namespace ctbuh\Salesforce\OAuth\Http;
 
-use ctbuh\Salesforce\Exception\BadTokenException;
 use ctbuh\Salesforce\OAuth\AuthApi;
+use ctbuh\Salesforce\OAuth\Exception\BadTokenException;
 use ctbuh\Salesforce\OAuth\Manager;
-use ctbuh\Salesforce\OAuth\TokenSessionStorage;
+use ctbuh\Salesforce\OAuth\TokenStorage;
 use GuzzleHttp\Exception\RequestException;
 use Illuminate\Http\Request;
 
@@ -43,7 +43,7 @@ class OAuthController
         return redirect($api->getAuthLoginUrl());
     }
 
-    public function callback(Request $request, AuthApi $api, TokenSessionStorage $storage)
+    public function callback(Request $request, AuthApi $api, TokenStorage $storage)
     {
         $code = $request->get('code');
 
@@ -62,7 +62,7 @@ class OAuthController
 
         return 'Something went wrong...';
     }
-    
+
     public function logout(Manager $manager)
     {
         $manager->revokeQuietly();
