@@ -21,6 +21,10 @@ class SalesforceServiceProvider extends ServiceProvider
 
             return new AuthApi($config->get('salesforce'));
         });
+
+        $this->app->singleton(TokenStorage::class, function (Application $app) {
+            return new TokenStorage($app['request'], $app['cookie']);
+        });
     }
 
     public function boot()

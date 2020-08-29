@@ -79,13 +79,15 @@ class CachedManager
                         // do nothing
                     }
                 }
-                
+
                 // cache only if something was returned...
                 if ($info) {
                     $this->cache->put($this->getCacheKey(), $info, self::CACHE_TIMEOUT);
                 } else {
                     // $manager->revokeQuietly();
                 }
+
+                return $info;
             }
         }
 
