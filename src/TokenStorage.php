@@ -31,7 +31,7 @@ class TokenStorage
     {
         $this->access_token = $token;
 
-        $cookie = $this->cookieJar->make(self::ACCESS_TOKEN_KEY, serialize($token));
+        $cookie = $this->cookieJar->forever(self::ACCESS_TOKEN_KEY, serialize($token));
         $this->cookieJar->queue($cookie);
 
         // refresh_token is not present for new tokens generated through refresh token
@@ -67,7 +67,7 @@ class TokenStorage
      */
     public function getRefreshToken()
     {
-        $token = unserialize($this->request->cookie(self::REFRESH_TOKEN_KEY));
+        $token = @unserialize($this->request->cookie(self::REFRESH_TOKEN_KEY));
         return $token ? $token : $this->refresh_token;
     }
 
