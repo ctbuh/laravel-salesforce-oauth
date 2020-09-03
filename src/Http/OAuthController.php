@@ -57,7 +57,7 @@ class OAuthController
             }
 
         } catch (RequestException $requestException) {
-            // do nothing
+            return $requestException->getMessage();
         }
 
         return 'Something went wrong...';
