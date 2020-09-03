@@ -2,6 +2,11 @@
 
 ![](https://i.imgur.com/B4GeTBg.png)
 
+## Install
+
+```bash
+composer require ctbuh/laravel-salesforce-oauth dev-master
+```
 
 ## Links
 
