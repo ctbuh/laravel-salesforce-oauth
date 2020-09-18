@@ -30,6 +30,9 @@ class TokenStorage
     public function save(AccessToken $token)
     {
         $this->access_token = $token;
+        
+        // otherwise Cookie gets too large
+        unset($token->id_token);
 
         $cookie = $this->cookieJar->forever(self::ACCESS_TOKEN_KEY, serialize($token));
         $this->cookieJar->queue($cookie);
