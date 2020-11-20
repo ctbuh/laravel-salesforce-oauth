@@ -8,9 +8,12 @@ use ctbuh\Salesforce\OAuth\Manager;
 use ctbuh\Salesforce\OAuth\TokenStorage;
 use GuzzleHttp\Exception\RequestException;
 use Illuminate\Http\Request;
+use Illuminate\Session\Store;
 
 class OAuthController
 {
+    const RETURN_TO_SESSION_KEY = 'sf_oauth_return_to';
+
     public function status(Manager $manager)
     {
         try {
@@ -31,7 +34,7 @@ class OAuthController
         }
     }
 
-    public function login(Request $request, AuthApi $api)
+    public function login(Request $request, AuthApi $api, Store $sessionStore)
     {
         $return_to = $request->get('return_to');
 
@@ -39,11 +42,12 @@ class OAuthController
             $return_to = $request->headers->get('referer');
         }
 
-        // TODO: session.return_to = absolute url
+        $sessionStore->put(self::RETURN_TO_SESSION_KEY, $return_to);
+
         return redirect($api->getAuthLoginUrl());
     }
 
-    public function callback(Request $request, AuthApi $api, TokenStorage $storage)
+    public function callback(Request $request, AuthApi $api, TokenStorage $storage, Store $sessionStore)
     {
         $code = $request->get('code');
 
@@ -53,7 +57,9 @@ class OAuthController
 
             if ($token) {
                 $storage->save($token);
-                return redirect()->to('/');
+
+                $return_to = $sessionStore->get(self::RETURN_TO_SESSION_KEY);
+                return redirect()->to($return_to ?? '/');
             }
 
         } catch (RequestException $requestException) {
