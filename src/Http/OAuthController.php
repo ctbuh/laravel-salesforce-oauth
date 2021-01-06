@@ -2,11 +2,13 @@
 
 namespace ctbuh\Salesforce\OAuth\Http;
 
+use ctbuh\Salesforce\OAuth\AccessToken;
 use ctbuh\Salesforce\OAuth\AuthApi;
 use ctbuh\Salesforce\OAuth\Exception\BadTokenException;
 use ctbuh\Salesforce\OAuth\Manager;
 use ctbuh\Salesforce\OAuth\TokenStorage;
 use GuzzleHttp\Exception\RequestException;
+use Illuminate\Config\Repository;
 use Illuminate\Http\Request;
 use Illuminate\Session\Store;
 
@@ -14,7 +16,7 @@ class OAuthController
 {
     const RETURN_TO_SESSION_KEY = 'sf_oauth_return_to';
 
-    public function status(Manager $manager)
+    public function status(Manager $manager, Repository $config)
     {
         try {
             $info = (array)$manager->getUserInfo();
@@ -25,13 +27,28 @@ class OAuthController
                 ]);
             }
 
-            return response()->json($info);
+            // include token info too:
+            if ($config->get('oauth_status_show_tokens')) {
+                $info['at'] = $manager->getAccessToken();
+                $info['rt'] = $manager->getRefreshToken();
+            }
+
+            return response()->header('Access-Control-Allow-Origin', '*')->json($info);
         } catch (BadTokenException $exception) {
 
-            return response()->json([
+            return response()->header('Access-Control-Allow-Origin', '*')->json([
                 'error' => 'Token Expired'
             ]);
         }
+    }
+
+    public function loginUsingToken(Request $request, TokenStorage $tokenStorage)
+    {
+        $token = new AccessToken($request->all());
+        $tokenStorage->save($token);
+
+        // does not necessarily mean that these tokens will work for login
+        return response()->json(['status' => 'success']);
     }
 
     public function login(Request $request, AuthApi $api, Store $sessionStore)

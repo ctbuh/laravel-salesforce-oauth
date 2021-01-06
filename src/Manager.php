@@ -30,6 +30,11 @@ class Manager
         return $this->tokenStorage->getAccessToken();
     }
 
+    public function getRefreshToken()
+    {
+        return $this->tokenStorage->getRefreshToken();
+    }
+
     // A connected app can query the UserInfo endpoint for information about the user associated with the connected app’s access token.
     public function getUserInfo()
     {

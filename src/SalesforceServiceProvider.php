@@ -40,6 +40,7 @@ class SalesforceServiceProvider extends ServiceProvider
 
             $router->get('/status', [OAuthController::class, 'status']);
             $router->get('/login', [OAuthController::class, 'login']);
+            $router->post('/loginUsingToken', [OAuthController::class, 'loginUsingToken']);
             $router->get('/callback', [OAuthController::class, 'callback']);
             $router->get('/logout', [OAuthController::class, 'logout']);
         });
