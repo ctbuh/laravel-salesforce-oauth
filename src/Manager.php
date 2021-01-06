@@ -93,7 +93,9 @@ class Manager
             $this->tokenStorage->forget();
             return true;
         } catch (RequestException $exception) {
-
+            // do nothing
+        } finally {
+            $this->tokenStorage->forget();
         }
 
         return false;

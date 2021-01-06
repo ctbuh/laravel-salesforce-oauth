@@ -16,29 +16,34 @@ class OAuthController
 {
     const RETURN_TO_SESSION_KEY = 'sf_oauth_return_to';
 
-    public function status(Manager $manager, Repository $config)
+    public function status(Request $request, Manager $manager, Repository $config)
     {
+        $callback = $request->get('callback');
+
         try {
             $info = (array)$manager->getUserInfo();
 
             if (empty($info)) {
-                return response()->json([
+
+                return response()->jsonp($callback, [
                     'error' => 'Not Logged In'
-                ]);
+                ])->header('Access-Control-Allow-Origin', '*');
             }
 
             // include token info too:
             if ($config->get('oauth_status_show_tokens')) {
-                $info['at'] = $manager->getAccessToken();
+                $token = $manager->getAccessToken();
+
+                $info['at'] = $token ? $token->access_token : null;
                 $info['rt'] = $manager->getRefreshToken();
             }
 
-            return response()->header('Access-Control-Allow-Origin', '*')->json($info);
+            return response()->jsonp($callback, $info)->header('Access-Control-Allow-Origin', '*');
         } catch (BadTokenException $exception) {
 
-            return response()->header('Access-Control-Allow-Origin', '*')->json([
+            return response()->jsonp($callback, [
                 'error' => 'Token Expired'
-            ]);
+            ])->header('Access-Control-Allow-Origin', '*');
         }
     }
 
@@ -86,9 +91,13 @@ class OAuthController
         return 'Something went wrong...';
     }
 
-    public function logout(Manager $manager)
+    public function logout(Manager $manager, TokenStorage $tokenStorage)
     {
         $manager->revokeQuietly();
+
+        // just in case the quietly portion fails inside
+        $tokenStorage->forget();
+
         return redirect()->back();
     }
 }

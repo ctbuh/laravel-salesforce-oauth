@@ -30,7 +30,7 @@ class TokenStorage
     public function save(AccessToken $token)
     {
         $this->access_token = $token;
-        
+
         // otherwise Cookie gets too large
         unset($token->id_token);
 
@@ -70,7 +70,7 @@ class TokenStorage
      */
     public function getRefreshToken()
     {
-        $token = @unserialize($this->request->cookie(self::REFRESH_TOKEN_KEY));
+        $token = $this->request->cookie(self::REFRESH_TOKEN_KEY);
         return $token ? $token : $this->refresh_token;
     }
 
