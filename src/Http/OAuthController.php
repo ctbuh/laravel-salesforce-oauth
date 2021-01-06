@@ -29,13 +29,15 @@ class OAuthController
                     'error' => 'Not Logged In'
                 ])->header('Access-Control-Allow-Origin', '*');
             }
-
+            
             // include token info too:
-            if ($config->get('oauth_status_show_tokens')) {
+            if ($config->get('salesforce.oauth_status_show_tokens')) {
                 $token = $manager->getAccessToken();
 
-                $info['at'] = $token ? $token->access_token : null;
-                $info['rt'] = $manager->getRefreshToken();
+                $info['tokens'] = [
+                    'access_token' => $token ? $token->access_token : null,
+                    'refresh_token' => $manager->getRefreshToken()
+                ];
             }
 
             return response()->jsonp($callback, $info)->header('Access-Control-Allow-Origin', '*');
