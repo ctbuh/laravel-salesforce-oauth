@@ -29,6 +29,10 @@ class TokenStorage
 
     public function save(AccessToken $token)
     {
+        if ($token->access_token) {
+            return;
+        }
+
         $this->access_token = $token;
 
         // otherwise Cookie gets too large
