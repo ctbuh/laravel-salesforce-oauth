@@ -10,6 +10,11 @@ use Illuminate\Support\ServiceProvider;
 
 class SalesforceServiceProvider extends ServiceProvider
 {
+    protected $routerMiddleware = [
+        \Illuminate\Cookie\Middleware\EncryptCookies::class,
+        \Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse::class,
+    ];
+
     public function register()
     {
         $this->mergeConfigFrom(__DIR__ . '/../config/salesforce.php', 'salesforce');
@@ -36,7 +41,7 @@ class SalesforceServiceProvider extends ServiceProvider
         /** @var Router $router */
         $router = $this->app['router'];
 
-        $router->middleware('web')->prefix('oauth')->group(function (Router $router) {
+        $router->middleware($this->routerMiddleware)->prefix('oauth')->group(function (Router $router) {
 
             $router->get('/status', [OAuthController::class, 'status']);
             $router->get('/login', [OAuthController::class, 'login']);

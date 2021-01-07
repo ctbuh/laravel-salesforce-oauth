@@ -29,7 +29,7 @@ class TokenStorage
 
     public function save(AccessToken $token)
     {
-        if ($token->access_token) {
+        if (!$token->access_token) {
             return;
         }
 
