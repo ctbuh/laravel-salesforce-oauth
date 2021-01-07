@@ -4,6 +4,7 @@ namespace ctbuh\Salesforce\OAuth\Http;
 
 use ctbuh\Salesforce\OAuth\AccessToken;
 use ctbuh\Salesforce\OAuth\AuthApi;
+use ctbuh\Salesforce\OAuth\CachedManager;
 use ctbuh\Salesforce\OAuth\Exception\BadTokenException;
 use ctbuh\Salesforce\OAuth\Manager;
 use ctbuh\Salesforce\OAuth\TokenStorage;
@@ -16,12 +17,12 @@ class OAuthController
 {
     const RETURN_TO_SESSION_KEY = 'sf_oauth_return_to';
 
-    public function status(Request $request, Manager $manager, Repository $config)
+    public function status(Request $request, CachedManager $cachedManager, Repository $config)
     {
         $callback = $request->get('callback');
 
         try {
-            $info = (array)$manager->getUserInfo();
+            $info = (array)$cachedManager->getUserInfo();
 
             if (empty($info)) {
 
@@ -32,11 +33,11 @@ class OAuthController
             
             // include token info too:
             if ($config->get('salesforce.oauth_status_show_tokens')) {
-                $token = $manager->getAccessToken();
+                $token = $cachedManager->getAccessToken();
 
                 $info['tokens'] = [
                     'access_token' => $token ? $token->access_token : null,
-                    'refresh_token' => $manager->getRefreshToken()
+                    'refresh_token' => $cachedManager->getRefreshToken()
                 ];
             }
 

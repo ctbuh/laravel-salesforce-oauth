@@ -44,6 +44,11 @@ class CachedManager
         return $this->manager->getAccessToken();
     }
 
+    public function getRefreshToken()
+    {
+        return $this->manager->getRefreshToken();
+    }
+
     public function flush()
     {
         $cache_key = $this->getCacheKey();
