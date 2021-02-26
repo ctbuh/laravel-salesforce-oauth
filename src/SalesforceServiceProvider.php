@@ -11,8 +11,9 @@ use Illuminate\Support\ServiceProvider;
 class SalesforceServiceProvider extends ServiceProvider
 {
     protected $routerMiddleware = [
+        \Illuminate\Session\Middleware\StartSession::class,
         \Illuminate\Cookie\Middleware\EncryptCookies::class,
-        \Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse::class,
+        \Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse::class
     ];
 
     public function register()
